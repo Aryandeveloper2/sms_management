@@ -1,0 +1,353 @@
+{{ header }}{{ column_left }}
+<div id="content">
+  <div class="page-header">
+    <div class="container-fluid">
+      <div class="pull-right">
+        <button type="submit" form="form-customer" data-toggle="tooltip" title="{{button_save}}" class="btn btn-primary"><i class="fa fa-save"></i></button>
+        <a href="{{cancel}}" data-toggle="tooltip" title="{{button_cancel}}" class="btn btn-default"><i class="fa fa-reply"></i></a></div>
+       <h1>{{ heading_title }}</h1>
+      <ul class="breadcrumb">
+        {% for breadcrumb in breadcrumbs %}
+        <li><a href="{{ breadcrumb.href }}">{{ breadcrumb.text }}</a></li>
+        {% endfor %}
+      </ul>
+      </ul>
+    </div>
+  </div>
+  <div class="container-fluid">
+    {% if (error_warning) %}
+    <div class="alert alert-danger"><i class="fa fa-exclamation-circle"></i> {{ error_warning}}
+      <button type="button" class="close" data-dismiss="alert">&times;</button>
+    </div>
+     {% endif %}
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><i class="fa fa-pencil"></i> {{"ویرایش ماژول"}}</h3>
+      </div>
+      <div class="panel-body">
+        <form action="{{ action}}" method="post" enctype="multipart/form-data" id="form-customer" class="form-horizontal">
+         <ul class="nav nav-tabs">
+            <li class="active"><a href="#tab-general" data-toggle="tab">{{ "تب عمومی "}}</a></li>
+            <li><a href="#tab-simple" data-toggle="tab">{{ "تب وب سرویس نمونه"}}</a></li>
+            <li><a href="#tab-test" data-toggle="tab">{{ "تب تست"}}</a></li>
+          
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane active" id="tab-general">
+<div class="table-responsive">
+  
+ 
+  <div class="form-group">
+            <label class="col-sm-2 control-label" for="input-type">{{ entry_status}}</label>
+         <div class="col-sm-8">
+       <select name="sms_status" class="form-control" >
+            {% if (sms_status) %}
+            <option value="1" selected="selected">{{ text_enabled}}</option>
+            <option value="0">{{ text_disabled}}</option>
+             {% else %}
+            <option value="1">{{ text_enabled}}</option>
+            <option value="0" selected="selected">{{ text_disabled}}</option>
+              {% endif %}
+      </select>
+      </div>
+      </div>
+	    <table class="table table-tbody">
+       
+       <hidden name="sms_samane_sms" value="melipayamak">
+                 
+<p class="help"><b>{{ text_information}}</b></p>
+ 
+
+      <tr>
+        <td width="25%">{{ text_number}}</td>
+        <td><input type="text" name="sms_from" value="{{ sms_from}}" size="20" class="form-control" /></td>
+      </tr>
+      <tr>
+        <td width="25%">{{ text_username}}</td>
+        <td><input type="text" name="sms_user" value="{{ sms_user}}" size="20" class="form-control" /></td>
+
+      </tr>
+      <tr>
+        <td width="25%">{{ text_password}}</td>
+        <td><input type="password" name="sms_pass" value="{{ sms_pass}}" size="20" class="form-control" /></td>
+      </tr>
+    </table>
+ 
+<p class="help"><b>{{ text_moshtari}}</b></p>
+
+<div style="border: 1px; gray solid; background: white; padding: 5px;">
+<span class="help">{{ text_tozih_kar}}<br />
+{{ text_shop}}<br />
+{{ text_url}}<br />
+{{ text_email}}<br />
+{{ text_name}}<br />
+{{ "#customer_tel# = شماره تماس کاربر"}}<br />
+{{ text_orderid}}<br />
+{{ text_ip}}<br />
+{{ "#order_pro# = که شامل نام کالا تعداد و قیمت کالاست"}}<br />
+
+{{ "#order_total# = قیمت کل خرید"}}<br />
+{{ "#order_rah# = شماره پیگیری (این کد میتواند شامل کد رهگیری پستی در در خرید پستی یا کد تراکنش در خرید آنلاین بانکی باشد)"}}<br />
+{{ text_status_order}}<br /><br />
+
+
+
+
+
+<div>خط جدید = #nl#
+</div>
+
+
+
+<p class="help"><b>
+ارسال پیام صوتی به کاربر هنگامی که شماره گیرنده پیام  پیام های تبلیغاتی را دریافت نمیکند
+</b></p>
+<div class="form-group">
+															<label class="col-sm-4 control-label" for="input_status">{{" ارسال پیام صوتی به کاربر هنگام ثبت نام"}}</label>
+															<div class="col-sm-8">
+																<input type="hidden" value="0" name="sms_smssignup_voice" id="input_status" class="form-control" />
+																<input type="checkbox" id="toggle-sign"   value="1" name="sms_smssignup_voice"  {% if sms_smssignup_voice %} checked="checked {% endif %}  class="form-control" />
+															</div>
+														</div><!-- // -->
+														
+														
+														
+														
+<div class="form-group">
+															<label class="col-sm-4 control-label" for="input_status">{{"ارسال پیام صوتی هنگام ورود به حساب کاربری"}}</label>
+															<div class="col-sm-8">
+																<input type="hidden" value="0" name="sms_login_voice" id="input_status" class="form-control" />
+																<input type="checkbox" id="toggle-login"   value="1" name="sms_login_voice"  {% if sms_login_voice %} checked="checked" {% endif %} class="form-control" />
+															</div>
+														</div><!-- // -->
+														
+														
+<div class="form-group">
+															<label class="col-sm-4 control-label" for="input_status">{{ "ارسال پیام صوتی هنگام خروج از حساب کاربری"}}</label>
+															<div class="col-sm-8">
+																<input type="hidden" value="0" name="sms_logout_voice" id="input_status" class="form-control" />
+																<input type="checkbox" id="toggle-logout"   value="1" name="sms_logout_voice"  {% if sms_logout_voice %}  checked="checked" {% endif %}  class="form-control" />
+															</div>
+														</div><!-- // -->
+														
+																												
+<div class="form-group">
+															<label class="col-sm-4 control-label" for="input_status">{{"ارسال پیام صوتی هنگام ثبت سفارش"}}</label>
+															<div class="col-sm-8">
+																<input type="hidden" value="0" name="sms_order_voice" id="input_status" class="form-control" />
+																<input type="checkbox" id="toggle-order"   value="1" name="sms_order_voice"  {% if sms_order_voice %} checked="checked" {% endif %}  class="form-control" />
+															</div>
+														</div><!-- // -->
+
+<h4>{{ text_send}}</h4>
+	
+    <table class="table table-tbody">
+      <tr>
+
+        <td><input type="checkbox" name="sms_smssignup"  {% if sms_smssignup=='1' %} {{ "checked"}}    {% endif %} value="1"/> {{ text_send_ok}}
+         
+          
+	<br />
+	<textarea class="form-control" style="width: 320px; height: 80px; font-size: 10px;" id="t1" name="sms_smssignup_txt">{{ sms_smssignup_txt}}</textarea>
+	<br /><span class="help" style="clear:both;  "><a href='#' onclick="document.getElementById('t1').value=document.getElementById('t1v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t1v">{{ text_sample_reg}}</div></span>
+
+	<br />
+	</td>
+      </tr>
+      <tr>
+       
+        <td><input type="checkbox" name="sms_smslogin"    {% if sms_smslogin=='1' %} {{ "checked"}}    {% endif %} value="1" />{{ text_login_ok}}
+           
+ 
+	<br />
+	<textarea class="form-control" id="t2" style="width: 320px; height: 80px; font-size: 10px;" name="sms_smslogin_txt">{{ sms_smslogin_txt}}</textarea>
+	<br /><span class="help" style="clear:both;  "><a href='#' onclick="document.getElementById('t2').value=document.getElementById('t2v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t2v">{{ text_wellcom}}</div>&nbsp;</span>
+
+	<br />
+	</td>
+      </tr>
+      <tr>
+        <td><input name="sms_smslogout" type="checkbox"    {% if sms_smslogout=='1' %} {{ "checked"}}    {% endif %} value="1" /> {{ text_logout_ok}}
+        
+	<br />
+	<textarea class="form-control" id="t3" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smslogout_txt">{{ sms_smslogout_txt}}</textarea>
+	<br /><span class="help" style="clear:both;  "><a href='#' onclick="document.getElementById('t3').value=document.getElementById('t3v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t3v">{{ text_sample_logout}}</div>&nbsp;</span>
+
+	<br />
+	</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="sms_smsplaced"   {% if sms_smsplaced=='1' %} {{ "checked"}}    {% endif %} value="1" /> ارسال SMS ثبت شدن سفارش مشتری:
+        
+	<br />
+	<textarea class="form-control" id="t4" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smsplaced_txt">{{ sms_smsplaced_txt}}</textarea>
+	<br /><span class="help" style="clear:both;  "><a href='#' onclick="document.getElementById('t4').value=document.getElementById('t4v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t4v">{{ "سفارش شما ثبت شد و بزودی پردازش می شود. شماره سفارش: #orderid# .سفارش شما شامل #order_pro# 
+قیمت نهایی #order_total#"}}</div>&nbsp;</span>
+
+	<br />
+	</td>
+      </tr>
+    
+          <tr>
+        <td><input type="checkbox" name="sms_smsproccessed"    {% if sms_smsproccessed=='1' %} {{ "checked"}}    {% endif %} value="1"/> {{ text_order_complate}}
+	<br />
+	<textarea class="form-control" id="t5" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smsproccessed_txt">{{ sms_smsproccessed_txt}}</textarea>
+	<br /><span class="help" style="clear:both;  "><a href='#' onclick="document.getElementById('t5').value=document.getElementById('t5v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t5v">{{ text_sample_sms_smsproccessed}}</div>&nbsp;</span>
+
+	<br />
+	</td>
+      </tr>
+    </table>
+
+<p class="help"><b>{{ text_admin_sms}}</b></p>
+    <table class="form">
+      <tr>
+        <td><input type="checkbox" name="sms_smsnewsignup"    {% if sms_smsnewsignup=='1' %} {{ "checked"}}    {% endif %} value="1" /> {{ text_user_reg}}
+	<br />
+
+	<textarea class="form-control" id="t6" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smsnewsignup_txt">{{ sms_smsnewsignup_txt}}</textarea>
+	<br /><span class="help" style="clear:both;  "><a href='#' onclick="document.getElementById('t6').value=document.getElementById('t6v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t6v">{{ text_sample_user_reg}}</div>&nbsp;</span>
+	</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="sms_smsneworder"   {% if sms_smsneworder=='1' %} {{ "checked"}}    {% endif %} value="1" /> {{ text_user_order }}
+	<br />
+
+	<textarea class="form-control" id="t7" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smsneworder_txt">{{ sms_smsneworder_txt}}</textarea>
+	<br /><span class="help" style="clear:both; "><a href='#' onclick="document.getElementById('t7').value=document.getElementById('t7v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t7v">{{ "کاربری با نام #name# و شماره تماس #customer_tel#  سفارشی با محصولات زیر ثبت کرده است #nl#
+#order_pro# 
+قیمت نهایی #order_total#"}}</div>&nbsp;</span>
+	</td>
+      </tr>
+      
+          <tr>
+        <td><input type="checkbox" name="sms_smsnewfish"  {% if sms_smsnewfish=='1' %} {{ "checked"}}    {% endif %} value="1" /> {{ text_user_fish}}
+	<br />
+
+	<textarea class="form-control" id="t9" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smsnewfish_txt">{{ sms_smsnewfish_txt}}</textarea>
+	<br /><span class="help" style="clear:both; "><a href='#' onclick="document.getElementById('t9').value=document.getElementById('t9v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t9v">{{ text_sample_user_fish}}</div>&nbsp;</span>
+	</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" name="sms_smsadminlogin"  {% if sms_smsadminlogin=='1'%} {{ "checked"}}    {% endif %}  value="1" />{{ text_admin_login}}
+	<br />
+
+	<textarea class="form-control" id="t8" style="width: 320px; height: 80px; font-size: 10px;"  name="sms_smsadminlogin_txt">{{ sms_smsadminlogin_txt}}</textarea>
+	<br /><span class="help" style="clear:both; "><a href='#' onclick="document.getElementById('t8').value=document.getElementById('t8v').innerHTML; return false;">{{ text_copy}}</a><br /><div id="t8v">{{ text_sample_admin_login}}</div>&nbsp;</span>
+	</td>
+      </tr>
+    </table>
+
+<p class="help"><b>{{ text_oder_setting}}</b></p>
+    <table class="form">
+
+      <tr>
+        <td>
+	{{ text_admin_num}} <input class="form-control" style="text-align: left; direction: ltr;" type="text" name="sms_shopnum" value="{{ sms_shopnum}}" size="25" />
+	</td>
+    </tr>
+    <tr>
+     <td>	{{ text_admin_pul}} <b>{{ sms_credit}}</b>
+
+	</td>
+      </tr>
+    </table>
+    </div>
+     </div>
+     </div>
+ <div class="tab-pane" id="tab-simple">
+  <div class="form-group">
+                    <label class="col-sm-2 control-label" for="input-description">{{ "نمونه کد اتصال به وب سرویس"}}</label>
+                    <div class="col-sm-10">
+                      <textarea class="w-100 form-control" cols="100" rows="12"  name="sms_sample" placeholder="" id="input-description" style="text-align:left">{{sms_sample}}</textarea>
+                    </div>
+                  </div>
+
+</div>
+            <div class="tab-pane d-flex flex-wrap" id="tab-test">
+                <div class="form-group d-flex flex-wrap align-items-center justify-content-between w-100">
+                    <label class="control-label w-25" for="input-description">{{ "شماره تلفن جهت تست"}}</label>
+                    <div class="w-50">
+                     <input name="teltest" value="" class="form-control" />
+                    </div>
+                </div>
+					
+					<div class="form-group d-flex flex-wrap align-items-center justify-content-between w-100">
+    					<label class=" control-label w-25" for="input-description">{{"نوع ارسال پیام"}}</label>
+                        <div class="w-50">
+                        <select name="type" class="form-control" > 
+    					   <option value="sms"> به صورت معمولی</option>
+    					    <option value="voice"> به صورت پیام صوتی برای شاره هایی که پیام تبلیغاتی نمیگیرد</option>
+    					</select>
+                        </div> 
+					</div>
+					
+					<div class="form-group d-flex flex-wrap align-items-center justify-content-between w-100">
+                        <label class=" control-label w-25" for="input-description">{{ "متن پیام"}}</label>
+                        <div class="w-50">
+                         <input name="message" value=""  class="form-control"  />
+                        </div>
+                    </div>
+                    <div class="">
+                            <button type="button" onclick="testwebservice()" id="btn" data-toggle="tooltip" title="تست وب سرویس" class="btn btn-primary">ارسال پیام تست</button>
+                    </div>
+
+                </div>
+      
+            </div>      
+</form>
+    </div>
+    </div>
+  </div>
+
+  <script type="text/javascript"><!--
+ function testwebservice() {
+   
+   $.ajax({
+          type: 'post',
+		dataType: 'json',
+		url: 'index.php?route=extension/module/sms_setting/testsms&user_token={{ user_token}}',
+		data: $('#tab-test :input , #tab-test select'),
+		beforeSend: function() {
+			
+			$('#btn').before('<div class="attention"><img src="catalog/view/theme/default/image/loading.gif" alt="" />&nbsp;&nbsp;{{"صبر کنید"}}</div>');
+		},
+				
+		success: function(json) {
+			if (json['alert']) {
+				alert(json['alert']);
+		
+			}
+			
+		
+			}
+		});
+ 
+ }
+ 
+
+  $(function() {
+    $('#toggle-sign').bootstrapToggle({
+      on: 'فعال',
+      off: 'غیرفعال'
+    });
+	
+	$('#toggle-logout').bootstrapToggle({
+      on: 'فعال',
+      off: 'غیرفعال'
+    });
+	
+	$('#toggle-login').bootstrapToggle({
+      on: 'فعال',
+      off: 'غیرفعال'
+    });
+	
+	$('#toggle-order').bootstrapToggle({
+      on: 'فعال',
+      off: 'غیرفعال'
+    });
+  })
+</script> 
+ <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script> 
+{{ footer}}

@@ -1,0 +1,197 @@
+<?xml version="1.0"?>
+<modification>
+  <name><![CDATA[SMS Management]]></name>
+  <code><![CDATA[sms_management]]></code>
+  <version>3.6</version>
+  <author>melipayamak</author>
+  <!--
+<file path="system/startup.php">
+<operation>
+<search><![CDATA[require_once(DIR_SYSTEM . 'helper/utf8.php'); ]]></search>
+<add position="after"><![CDATA[require_once(DIR_SYSTEM . 'library/sms/sms.php');]]></add>
+</operation>
+</file>
+-->
+  <file path="admin/model/sale/order.php">
+    <operation error="skip">
+      <search><![CDATA[public function getTotalEmailsByProductsOrdered($products) {]]></search>
+      <add position="before" trim="true"><![CDATA[
+
+public function getTotalTelsByProductsOrdered($products) {
+$implode = array();
+
+foreach ($products as $product_id) {
+$implode[] = "op.product_id = '" . (int)$product_id . "'";
+}
+
+$query = $this->db->query("SELECT DISTINCT telephone FROM `" . DB_PREFIX . "order` o LEFT JOIN " . DB_PREFIX . "order_product op ON (o.order_id = op.order_id) WHERE (" . implode(" OR ", $implode) . ") AND o.order_status_id <> '0'");
+
+return $query->row['total'];
+}
+]]></add>
+    </operation>
+    <operation error="skip">
+      <search><![CDATA[public function getEmailsByProductsOrdered($products, $start, $end) {]]></search>
+      <add position="before" trim="true"><![CDATA[
+public function getTelsByProductsOrdered($products, $start, $end) {
+$implode = array();
+
+foreach ($products as $product_id) {
+$implode[] = "op.product_id = '" . (int)$product_id . "'";
+}
+
+$query = $this->db->query("SELECT DISTINCT telephone FROM `" . DB_PREFIX . "order` o LEFT JOIN " . DB_PREFIX . "order_product op ON (o.order_id = op.order_id) WHERE (" . implode(" OR ", $implode) . ") AND o.order_status_id <> '0' LIMIT " . (int)$start . "," . (int)$end);
+
+return $query->rows;
+}
+]]></add>
+    </operation>
+  </file>
+  <file path="admin/controller/common/login.php">
+    <operation>
+      <search><![CDATA[if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {]]></search>
+      <add position="after"><![CDATA[
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsadminlogin')=="1" && $this->config->get('sms_smsadminlogin_txt')!=""){
+$this->sms = new Sms();
+$login=$this->config->get('sms_smsadminlogin_txt');
+$message=$this->sms->setsms($login,$this->config->get('config_name'),HTTP_SERVER,"","","","");
+
+
+$this->sms->send_sms($this->config->get('sms_shopnum'),$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$this->config->get('sms_sample'));
+}
+
+]]></add>
+    </operation>
+  </file>
+  <file path="catalog/controller/mail/register.php">
+    <operation>
+      <search><![CDATA[foreach ($emails as $email) {]]></search>
+      <add position="before"><![CDATA[
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smssignup')=="1" && $this->config->get('sms_smssignup_txt')!=""){
+$this->sms = new Sms();
+$register=$this->config->get('sms_smssignup_txt');
+$message=$this->sms->setsms($register,$this->config->get('config_name'),HTTP_SERVER,$args[0]['email'],$args[0]['password'],"","");
+$voice=$this->config->get('sms_smssignup_voice');
+$this->sms->send_sms($args[0]['telephone'],$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$voice);
+}
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsnewsignup')=="1" && $this->config->get('sms_smsnewsignup_txt')!=""){
+$registerad= $this->config->get('sms_smsnewsignup_txt');
+$this->sms = new Sms();
+$message=$this->sms->setsms($registerad,$this->config->get('config_name'),HTTP_SERVER,$args[0]['email'],$args[0]['password'],"","");
+
+$this->sms->send_sms( $this->config->get('sms_shopnum'),$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$this->config->get('sms_sample'));
+}
+]]></add>
+    </operation>
+  </file>
+  <file path="catalog/controller/account/logout.php">
+    <operation>
+      <search><![CDATA[if ($this->customer->isLogged()) {]]></search>
+      <add position="after"><![CDATA[
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smslogout')=="1" && $this->config->get('sms_smslogout_txt')!=""){
+$this->sms = new Sms();
+$logout=$this->config->get('sms_smslogout_txt');
+$voice=$this->config->get('sms_logout_voice');
+$message=$this->sms->setsms($logout,$this->config->get('config_name'),HTTP_SERVER,"","","","");
+
+$this->load->model('account/customer');
+$customer_info = $this->model_account_customer->getCustomer($this->customer->getId());
+$this->sms->send_sms($customer_info ['telephone'],$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$voice);
+}
+
+]]></add>
+    </operation>
+  </file>
+  <file path="catalog/controller/account/login.php">
+    <operation>
+      <search><![CDATA[
+if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
+]]></search>
+      <add position="after"><![CDATA[
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smslogin')=="1" && $this->config->get('sms_smslogin_txt')!=""){
+$this->sms = new Sms();
+$this->load->model('account/customer');
+$customer_info = $this->model_account_customer->getCustomer($this->customer->getId());
+$login=$this->config->get('sms_smslogin_txt');
+$message=$this->sms->setsms($login,$this->config->get('config_name'),HTTP_SERVER,$this->request->post['email'],$this->request->post['password'],"","");
+$voice=$this->config->get('sms_login_voice');
+
+$this->sms->send_sms($customer_info ['telephone'],$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$voice);
+}
+
+]]></add>
+    </operation>
+  </file>
+  <file path="catalog/controller/mail/order.php">
+    <operation>
+      <search><![CDATA[$order_totals = $this->model_checkout_order->getOrderTotals($order_info['order_id']);]]></search>
+      <add position="after"><![CDATA[
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsplaced')=="1" && $this->config->get('sms_smsplaced_txt')!=""){
+$this->sms = new Sms();
+$order=$this->config->get('sms_smsplaced_txt');
+$text="";
+foreach ($order_products as $result) {
+$text .=  $result['name'] .' با تعداد '. $result['quantity'] .' با قیمت '.  strip_tags(html_entity_decode($this->currency->format($result['total'], $order_info['currency_code'], $order_info['currency_value']), ENT_NOQUOTES, 'UTF-8')) . "\n";
+}
+$txt = str_replace( "#order_pro#", $text , $order );
+$text_total="";
+foreach ($order_totals as $total) {
+$text_total .= $total['title'] . ': ' . strip_tags(html_entity_decode($this->currency->format($total['value'], $order_info['currency_code'], $order_info['currency_value']), ENT_NOQUOTES, 'UTF-8')) . "\n";
+}
+$txt = str_replace( "#order_total#", $text_total , $txt );
+$txt = str_replace( "#order_rah#", $comment, $txt );
+
+$voice=$this->config->get('sms_order_voice');
+$message=$this->sms->setsms($txt,$this->config->get('config_name'),HTTP_SERVER,"","",$order_info['order_id'],"");
+$this->sms->send_sms($order_info['telephone'],$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$voice);
+}
+if( $this->config->get('sms_status')=="1" && $this->config->get('sms_smsneworder')=="1" && $this->config->get('sms_smsneworder_txt')!=""){
+$this->sms = new Sms();
+$order= $this->config->get('sms_smsneworder_txt');
+$text="";
+foreach ($order_products as $result) {
+$text .=  $result['name'] .' با تعداد '. $result['quantity'] .' با قیمت '.  strip_tags(html_entity_decode($this->currency->format($result['total'], $order_info['currency_code'], $order_info['currency_value']), ENT_NOQUOTES, 'UTF-8')) . "\n";
+}
+$txt = str_replace( "#order_pro#", $text , $order );
+$text_total="";
+foreach ($order_totals as $total) {
+$text_total .= $total['title'] . ': ' . strip_tags(html_entity_decode($this->currency->format($total['value'], $order_info['currency_code'], $order_info['currency_value']), ENT_NOQUOTES, 'UTF-8')) . "\n";
+}
+$txt = str_replace( "#order_total#", $text_total , $txt );
+$txt = str_replace( "#order_rah#", $comment, $txt );
+$namefamil=$order_info['firstname'].' '.$order_info['lastname'];
+$txt = str_replace( "#name#", $namefamil , $txt );
+$txt=str_replace( "#address#", $order_info['shipping_city'].' '.$order_info['shipping_address_1'] , $txt );
+$txt = str_replace( "#customer_tel#", $order_info['telephone'], $txt );
+
+$message=$this->sms->setsms($txt,$this->config->get('config_name'),HTTP_SERVER,"","",$order_info['order_id'],"");
+$this->sms->send_sms( $this->config->get('sms_shopnum'),$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$this->config->get('sms_sample'));
+}
+]]></add>
+    </operation>
+    <operation>
+      <search><![CDATA[
+if ($order_info['order_status_id'] && $order_status_id && $notify) {
+]]></search>
+      <add position="after"><![CDATA[
+if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsproccessed')=="1" &&  $this->config->get('sms_smsproccessed_txt')!=""){
+$this->sms = new Sms();
+$order_status=$this->config->get('sms_smsproccessed_txt');
+$order_status_query = $this->db->query("SELECT * FROM " . DB_PREFIX . "order_status WHERE order_status_id = '" . (int)$order_status_id . "' AND language_id = '" . (int)$order_info['language_id'] . "'");
+
+
+
+if ($order_status_query->num_rows) {
+
+$order_status_info= $order_status_query->row['name'] ;
+}
+$message=$this->sms->setsms($order_status,$this->config->get('config_name'),HTTP_SERVER,"","",$order_id,$order_status_info);
+
+
+$this->sms->send_sms($order_info['telephone'],$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$this->config->get('sms_sample'));
+}
+
+]]></add>
+    </operation>
+  </file>
+</modification>
