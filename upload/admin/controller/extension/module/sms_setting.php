@@ -6,8 +6,7 @@ class ControllerExtensionModuleSmsSetting extends Controller {
 		
 		$this->load->model('setting/setting');
 
-        $this->model_setting_setting->editModuleVersion('sms_setting',  '3.2.0.0');
-        
+
 	}
 	public function index() {   
 		$this->load->language('extension/module/sms_setting');
@@ -16,7 +15,6 @@ class ControllerExtensionModuleSmsSetting extends Controller {
 		
 		$this->load->model('setting/setting');
 		
-        $this->model_setting_setting->editModuleVersion('sms_setting',  '3.2.0.0');
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && ($this->validate())) {
 			$this->model_setting_setting->editSetting('sms', $this->request->post);		
@@ -307,7 +305,10 @@ class ControllerExtensionModuleSmsSetting extends Controller {
 		$credit=1;
 
         $data['sms_credit'] = "";
-
+        
+        
+       
+    
 		$data['header'] = $this->load->controller('common/header');
 		$data['column_left'] = $this->load->controller('common/column_left');
 		$data['footer'] = $this->load->controller('common/footer');
@@ -326,24 +327,72 @@ class ControllerExtensionModuleSmsSetting extends Controller {
 			return FALSE;
 		}	
 	}
+	
 	public function testsms(){
-	$json = array();
-	
-	$tel=$this->request->post['teltest'];
-	$message=$this->request->post['message'];
-	$type=$this->request->post['type'];
-	if($type=="voice"){
-	    $voice=1;
-	}else{
-	    $voice='';
-	}
+    	$json = array();
+    	
+    	$tel=$this->request->post['teltest'];
+    	$message=$this->request->post['message'];
+    	$type=$this->request->post['type'];
+    	if($type=="voice"){
+    	    $voice=1;
+    	}else{
+    	    $voice='';
+    	}
 
-    $this->sms = new Sms();
+        $this->sms = new Sms();
 	
-    $result=$this->sms->send_sms($tel,$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$voice);
+        $result=$this->sms->send_sms($tel,$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$voice);
 	
-	$json['alert']=$result;
-	$this->response->addHeader('Content-Type: application/json');
+	    $json['alert']=$result;
+	    $this->response->addHeader('Content-Type: application/json');
 		$this->response->setOutput(json_encode($json));
 	}
+
+	public function getSharedServiceBody(){
+    	$json = array();
+        
+        $this->sms = new Sms();
+        $shared_services = $this->sms->getSharedServiceBody($this->config->get('sms_user'),$this->config->get('sms_pass'));
+        
+    	$json['data'] = $shared_services;
+    	$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($json));
+	}
+	
+
+	
+	public function editPattern(){
+    	$json = array();
+    	$this->sms = new Sms();
+    	
+    	if(!isset($this->request->post['body'])) { return '';}
+    	
+    	if(!isset($this->request->post['body_id']) || $this->request->post['body_id'] == 0) {
+    	    // add
+    	    
+    	    $title = $this->request->post['title'];
+            $body = $this->request->post['body'];
+            $this->sms = new Sms();
+            $shared_services = $this->sms->sharedServiceBodyAdd($this->config->get('sms_user'),$this->config->get('sms_pass'),$title, $body);
+            
+        	$json = $shared_services;
+    	} else {
+    	    // edit
+    	    $body = $this->request->post['body'];
+            $bodyId = $this->request->post['body_id'];
+            
+            $shared_services = $this->sms->sharedServiceBodyEdit($this->config->get('sms_user'),$this->config->get('sms_pass'),$bodyId, $body);
+        	$json = $shared_services;
+    	}
+        
+        
+        
+    
+    	$this->response->addHeader('Content-Type: application/json');
+		$this->response->setOutput(json_encode($json));
+	}
+	
+	
+	
 }

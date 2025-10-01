@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <modification>
-  <name><![CDATA[SMS Management]]></name>
-  <code><![CDATA[sms_management]]></code>
-  <version>3.6</version>
-  <author>melipayamak</author>
-  <!--
+<name><![CDATA[SMS Management]]></name>
+<code><![CDATA[sms_management]]></code>
+<version>3.6</version>
+<author>melipayamak</author>
+<!--
 <file path="system/startup.php">
 <operation>
 <search><![CDATA[require_once(DIR_SYSTEM . 'helper/utf8.php'); ]]></search>
@@ -12,10 +12,10 @@
 </operation>
 </file>
 -->
-  <file path="admin/model/sale/order.php">
-    <operation error="skip">
-      <search><![CDATA[public function getTotalEmailsByProductsOrdered($products) {]]></search>
-      <add position="before" trim="true"><![CDATA[
+<file path="admin/model/sale/order.php">
+<operation error="skip">
+<search><![CDATA[public function getTotalEmailsByProductsOrdered($products) {]]></search>
+<add position="before" trim="true"><![CDATA[
 
 public function getTotalTelsByProductsOrdered($products) {
 $implode = array();
@@ -29,10 +29,10 @@ $query = $this->db->query("SELECT DISTINCT telephone FROM `" . DB_PREFIX . "orde
 return $query->row['total'];
 }
 ]]></add>
-    </operation>
-    <operation error="skip">
-      <search><![CDATA[public function getEmailsByProductsOrdered($products, $start, $end) {]]></search>
-      <add position="before" trim="true"><![CDATA[
+</operation>
+<operation error="skip">
+<search><![CDATA[public function getEmailsByProductsOrdered($products, $start, $end) {]]></search>
+<add position="before" trim="true"><![CDATA[
 public function getTelsByProductsOrdered($products, $start, $end) {
 $implode = array();
 
@@ -45,12 +45,12 @@ $query = $this->db->query("SELECT DISTINCT telephone FROM `" . DB_PREFIX . "orde
 return $query->rows;
 }
 ]]></add>
-    </operation>
-  </file>
-  <file path="admin/controller/common/login.php">
-    <operation>
-      <search><![CDATA[if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {]]></search>
-      <add position="after"><![CDATA[
+</operation>
+</file>
+<file path="admin/controller/common/login.php">
+<operation>
+<search><![CDATA[if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {]]></search>
+<add position="after"><![CDATA[
 if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsadminlogin')=="1" && $this->config->get('sms_smsadminlogin_txt')!=""){
 $this->sms = new Sms();
 $login=$this->config->get('sms_smsadminlogin_txt');
@@ -61,12 +61,12 @@ $this->sms->send_sms($this->config->get('sms_shopnum'),$message,$this->config->g
 }
 
 ]]></add>
-    </operation>
-  </file>
-  <file path="catalog/controller/mail/register.php">
-    <operation>
-      <search><![CDATA[foreach ($emails as $email) {]]></search>
-      <add position="before"><![CDATA[
+</operation>
+</file>
+<file path="catalog/controller/mail/register.php">
+<operation>
+<search><![CDATA[foreach ($emails as $email) {]]></search>
+<add position="before"><![CDATA[
 if($this->config->get('sms_status')=="1" && $this->config->get('sms_smssignup')=="1" && $this->config->get('sms_smssignup_txt')!=""){
 $this->sms = new Sms();
 $register=$this->config->get('sms_smssignup_txt');
@@ -82,12 +82,12 @@ $message=$this->sms->setsms($registerad,$this->config->get('config_name'),HTTP_S
 $this->sms->send_sms( $this->config->get('sms_shopnum'),$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$this->config->get('sms_sample'));
 }
 ]]></add>
-    </operation>
-  </file>
-  <file path="catalog/controller/account/logout.php">
-    <operation>
-      <search><![CDATA[if ($this->customer->isLogged()) {]]></search>
-      <add position="after"><![CDATA[
+</operation>
+</file>
+<file path="catalog/controller/account/logout.php">
+<operation>
+<search><![CDATA[if ($this->customer->isLogged()) {]]></search>
+<add position="after"><![CDATA[
 if($this->config->get('sms_status')=="1" && $this->config->get('sms_smslogout')=="1" && $this->config->get('sms_smslogout_txt')!=""){
 $this->sms = new Sms();
 $logout=$this->config->get('sms_smslogout_txt');
@@ -100,14 +100,14 @@ $this->sms->send_sms($customer_info ['telephone'],$message,$this->config->get('s
 }
 
 ]]></add>
-    </operation>
-  </file>
-  <file path="catalog/controller/account/login.php">
-    <operation>
-      <search><![CDATA[
+</operation>
+</file>
+<file path="catalog/controller/account/login.php">
+<operation>
+<search><![CDATA[
 if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
 ]]></search>
-      <add position="after"><![CDATA[
+<add position="after"><![CDATA[
 if($this->config->get('sms_status')=="1" && $this->config->get('sms_smslogin')=="1" && $this->config->get('sms_smslogin_txt')!=""){
 $this->sms = new Sms();
 $this->load->model('account/customer');
@@ -120,12 +120,12 @@ $this->sms->send_sms($customer_info ['telephone'],$message,$this->config->get('s
 }
 
 ]]></add>
-    </operation>
-  </file>
-  <file path="catalog/controller/mail/order.php">
-    <operation>
-      <search><![CDATA[$order_totals = $this->model_checkout_order->getOrderTotals($order_info['order_id']);]]></search>
-      <add position="after"><![CDATA[
+</operation>
+</file>
+<file path="catalog/controller/mail/order.php">
+<operation>
+<search><![CDATA[$order_totals = $this->model_checkout_order->getOrderTotals($order_info['order_id']);]]></search>
+<add position="after"><![CDATA[
 if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsplaced')=="1" && $this->config->get('sms_smsplaced_txt')!=""){
 $this->sms = new Sms();
 $order=$this->config->get('sms_smsplaced_txt');
@@ -168,12 +168,12 @@ $message=$this->sms->setsms($txt,$this->config->get('config_name'),HTTP_SERVER,"
 $this->sms->send_sms( $this->config->get('sms_shopnum'),$message,$this->config->get('sms_user'),$this->config->get('sms_pass'),$this->config->get('sms_samane_sms'),$this->config->get('sms_from'),$this->config->get('sms_sample'));
 }
 ]]></add>
-    </operation>
-    <operation>
-      <search><![CDATA[
+</operation>
+<operation>
+<search><![CDATA[
 if ($order_info['order_status_id'] && $order_status_id && $notify) {
 ]]></search>
-      <add position="after"><![CDATA[
+<add position="after"><![CDATA[
 if($this->config->get('sms_status')=="1" && $this->config->get('sms_smsproccessed')=="1" &&  $this->config->get('sms_smsproccessed_txt')!=""){
 $this->sms = new Sms();
 $order_status=$this->config->get('sms_smsproccessed_txt');
@@ -192,6 +192,6 @@ $this->sms->send_sms($order_info['telephone'],$message,$this->config->get('sms_u
 }
 
 ]]></add>
-    </operation>
-  </file>
+</operation>
+</file>
 </modification>

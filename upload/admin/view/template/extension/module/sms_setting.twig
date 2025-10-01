@@ -30,9 +30,152 @@
             <li class="active"><a href="#tab-general" data-toggle="tab">{{ "تب عمومی "}}</a></li>
             <li><a href="#tab-simple" data-toggle="tab">{{ "تب وب سرویس نمونه"}}</a></li>
             <li><a href="#tab-test" data-toggle="tab">{{ "تب تست"}}</a></li>
+            <li><a href="#tab-pattern" data-toggle="tab">پترن‌ها</a></li>
           
           </ul>
           <div class="tab-content">
+            <div class="tab-pane" id="tab-pattern">
+                <button type="button" class="btn btn-primary" onClick="OpenModalSMSPatternForm(0)">افزودن پترن جدید</button>
+                
+                <div class="modal fade" id="ModalSMSPatternForm" tabindex="-1" role="dialog" aria-labelledby="ModalSMSPatternFormTitle" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered w-50" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header d-flex">
+                                <h3 class="modal-title" id="ModalSMSPatternFormTitle" style="display:inline;">پترن‌ها</h3>
+                            </div>
+                
+                            <div class="modal-body d-flex flex-column">
+                                    <input type="hidden" name="pattern_body_id" value="0" id="input-pattern_body_id">
+                                    <div class="form-group pattern_title">
+                                        <label class="col-sm-2 control-label" for="input-pattern_title">عنوان</label>
+                                        <div class="col-sm-10">
+                                            <input type="text" name="pattern_title" id="input-pattern_title" class="form-control">
+                                        </div>
+                                    </div>
+                                    <div class="form-group pattern_body">
+                                        <label class="col-sm-2 control-label" for="input-pattern_body">محتوا</label>
+                                        <div class="col-sm-10">
+                                                <textarea name="pattern_body" id="input-pattern_body" class="form-control">
+                                                </textarea>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="button" onClick="submitPatternForm()" class="btn btn-success">ذخیره</button>
+                           </div>
+                    
+                        </div>
+                    </div>
+                </div>
+                
+                 <table class="table">
+                    <thead>
+                      <tr>
+                        <th>شناسه</th>
+                        <th>عنوان</th>
+                        <th>محتوا</th>
+                        <th>تاریخ ثبت</th>
+                        <th>وضعیت</th>
+                        <th>عملیات</th>
+                      </tr>
+                    </thead>
+                    <tbody class="sms_pattern_list">
+                     
+                    </tbody>
+                  </table>
+                
+
+                <script>
+                    $(function() {
+                         $.ajax({
+                            type: 'GET',
+                            url: 'index.php?route=extension/module/sms_setting/getSharedServiceBody&user_token={{ user_token }}',
+                            dataType: 'json',
+                            beforeSend: function () {},
+                            success: function (json) {
+                                console.log('get data')
+                                console.log(json)
+                                let html = ''
+                                json.data.ShareServiceBody.map((item, index) => {
+                                    html += `
+                                        <tr>
+                                            <td>${item.BodyID}</td>
+                                            <td>${item.Title}</td>
+                                            <td>${item.Body}</td>
+                                            <td>${item.InsertDate}</td>
+                                            <td>${item.BodyStatus}</td>
+                                            <td>
+                                            <input type="hidden" id="body-${item.BodyID}" value="${item.Body}" />
+                                            <input type="hidden" id="title-${item.BodyID}" value="${item.Title}" />
+                                            <button type="button" class="btn btn-primary btn-sm" onClick="
+                                            OpenModalSMSPatternForm(${item.BodyID})">
+                                            <i class="fa fa-pencil"></i>
+                                            </button></td>
+                                        </tr>
+                                    `
+                                })
+                                
+                                $('.sms_pattern_list').html(html)
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                            },
+                
+                        })
+                    });
+
+                   
+                    
+                    function OpenModalSMSPatternForm(body_id = 0) {
+                        if(body_id == 0) {
+                            $('#input-pattern_body_id').val(0)
+                            $('#input-pattern_title').val('')
+                            $('#input-pattern_body').val('')
+                        } else {
+                            $('#input-pattern_body_id').val(body_id)
+                            $('#input-pattern_title').val($(`#title-${body_id}`).val())
+                            $('#input-pattern_body').val($(`#body-${body_id}`).val())
+                        }
+                        
+                        $('#ModalSMSPatternForm').modal('show');
+                    }
+                    
+                    
+                    function submitPatternForm() {
+                       
+                       
+                       const body_id = $('#input-pattern_body_id').val()
+                       const title = $('#input-pattern_title').val()
+                       const body = $('#input-pattern_body').val()
+
+                        
+                        $.ajax({
+                            type: 'POST',
+                            url: 'index.php?route=extension/module/sms_setting/editPattern&user_token={{ user_token }}',
+                            dataType: 'json',
+                            data: {
+                                body_id,
+                                title,
+                                body
+                            },
+                            beforeSend: function () {
+                                
+                            },
+                            success: function (json) {
+                                $('#ModalSMSPatternForm').modal('hide');
+                                console.log(json)
+                                alert(json)
+                                // location.reload();
+                
+                            },
+                            error: function (xhr, ajaxOptions, thrownError) {
+                                alert(thrownError + "\r\n" + xhr.statusText + "\r\n" + xhr.responseText);
+                            },
+                
+                        })
+                    }
+
+                </script>
+            </div>
             <div class="tab-pane active" id="tab-general">
 <div class="table-responsive">
   
@@ -103,7 +246,7 @@
 ارسال پیام صوتی به کاربر هنگامی که شماره گیرنده پیام  پیام های تبلیغاتی را دریافت نمیکند
 </b></p>
 <div class="form-group">
-															<label class="col-sm-4 control-label" for="input_status">{{" ارسال پیام صوتی به کاربر هنگام ثبت نام"}}</label>
+															<label class="col-sm-4 control-label" for="input_status">{{"ارسال پیام صوتی به کاربر هنگام ثبت نام"}}</label>
 															<div class="col-sm-8">
 																<input type="hidden" value="0" name="sms_smssignup_voice" id="input_status" class="form-control" />
 																<input type="checkbox" id="toggle-sign"   value="1" name="sms_smssignup_voice"  {% if sms_smssignup_voice %} checked="checked {% endif %}  class="form-control" />
