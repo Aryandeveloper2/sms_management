@@ -7,6 +7,7 @@
 */
 //require_once(DIR_SYSTEM.'library/nuSoap/nusoap.php');   
 
+
  final class Sms {
       private     $to;
       private   $body;
@@ -86,10 +87,62 @@
 	}
 
 	
-	
-	
+	public function getSharedServiceBody($username,$password) {
 
-		public function setsms( $txtmsg, $shop = "", $url = "", $username = "", $password = "", $orderid = "",$status_order="" )
+        $client = new SoapClient("https://api.payamak-panel.com/post/SharedService.asmx?wsdl",array("encoding"=>"UTF-8"));
+        $data = array(
+        	"username" => $username,
+        	"password" => $password,
+        	
+        );
+        
+        $Result= $client->GetSharedServiceBody($data)->GetSharedServiceBodyResult;
+
+        return $Result;
+	}
+	
+	public function sharedServiceBodyAdd($username,$password, $title, $body) {
+
+        $client = new SoapClient("https://api.payamak-panel.com/post/SharedService.asmx?wsdl",array("encoding"=>"UTF-8"));
+        $data = array(
+        	"username" => $username,
+        	"password" => $password,
+        	"title" => $title,
+        	"body" => $body,
+        	"blackListId" => 1
+        );
+        $result = $client->SharedServiceBodyAdd($data)->SharedServiceBodyAddResult;
+        return $result;
+	}
+	
+	public function sharedServiceBodyEdit($username,$password, $bodyId,  $body) {
+
+        $client = new SoapClient("https://api.payamak-panel.com/post/SharedService.asmx?wsdl",array("encoding"=>"UTF-8"));
+        $data = array(
+        	"username" => $username,
+        	"password" => $password,
+        	"bodyId" => $bodyId,
+        	"body" => $body
+        );
+        $result = $client->SharedServiceBodyEdit($data)->SharedServiceBodyEditResult;
+        return $result;
+	}
+	
+	public function sendSmsPattern($data) {
+        $sms = new SoapClient("http://api.payamak-panel.com/post/Send.asmx?wsdl", array("encoding"=>"UTF-8"));
+   
+        $send_Result = $sms->SendByBaseNumber([
+            "username"=>$data['username'],
+            "password"=>$data['password'],
+            "text"=>$data['text'],
+            "to"=>$data['to'],
+            "bodyId"=>$data['bodyId']    
+        ])->SendByBaseNumberResult;
+        return $send_Result;
+	}
+
+
+	public function setsms( $txtmsg, $shop = "", $url = "", $username = "", $password = "", $orderid = "",$status_order="" )
 	{
 		$txt = str_replace( "#shop#", $shop, $txtmsg );
 		$txt = str_replace( "#url#", $url, $txt );
@@ -101,7 +154,8 @@
 		$txt = str_replace( "#nl#", "\r\n", $txt);
 		return $txt;
 	}
-		public function setsmsorder( $txtmsg= '', $shop = "", $url = "", $username = "", $password = "", $orderid = "",$status_order="",$order_tedad="",$pro_name="",$pro_price="",$pro_total="",$pro_rah= '' )
+	
+    public function setsmsorder( $txtmsg= '', $shop = "", $url = "", $username = "", $password = "", $orderid = "",$status_order="",$order_tedad="",$pro_name="",$pro_price="",$pro_total="",$pro_rah= '' )
 	{
 		$txt = str_replace( "#shop#", $shop, $txtmsg );
 		$txt = str_replace( "#url#", $url, $txt );
@@ -118,6 +172,7 @@
 		$txt = str_replace( "#nl#", "\r\n", $txt);
 		return $txt;
 	}
+	
 	public function setsmspay( $txtmsg, $shop = "",  $telephone = "", $name = "", $amount = "",$bank="" ,$msg="",$rah="" )
 	{
 		$txt = str_replace( "#shop#", $shop, $txtmsg );
@@ -129,17 +184,19 @@
 		$txt = str_replace( "#order_rah#", $rah, $txt );
 		return $txt;
 	}
+	
 	public function setsmsverify($txtmsg, $verify="" )
 	{
 		$txt = str_replace( "#verify_code#", $verify,$txtmsg );
 		return $txt;
 	}
 
-public function setusername($txtmsg, $username="" )
+    public function setusername($txtmsg, $username="" )
 	{
 		$txt = str_replace( "#username#", $username,$txtmsg );
 		return $txt;
 	}
+	
 	public function setsmsfish( $txtmsg ="", $shop = "",  $telephone = "", $name = "", $amount = "",$bank="" ,$msg="",$order_id = "" )
 	{
 		$txt = str_replace( "#shop#", $shop, $txtmsg );
@@ -151,7 +208,8 @@ public function setusername($txtmsg, $username="" )
 		$txt = str_replace( "#order_id#", $order_id, $txt );
 		return $txt;
 	}
-		public function setsmsfish_edit( $txtmsg, $fish_id )
+	
+	public function setsmsfish_edit( $txtmsg, $fish_id )
 	{
 		$txt = str_replace( "#shop#", $shop, $txtmsg );
 		$txt = str_replace( "#telephone#", $telephone, $txt );
@@ -163,14 +221,15 @@ public function setusername($txtmsg, $username="" )
 		return $txt;
 	}
 	
-		public function setsmsletme($txtmsg, $product_name,$product_url )
+	public function setsmsletme($txtmsg, $product_name,$product_url )
 	{
 		$txt = str_replace( "#product_name#", $product_name, $txtmsg );
 		$txt = str_replace( "#productLink#", $product_url, $txt );
 		
 		return $txt;
 	}
-			public function setsmsnewslater( $txtmsg, $mobile)
+	
+	public function setsmsnewslater( $txtmsg, $mobile)
 	{
 		$txt = str_replace( "#mobile#", $mobile, $txtmsg );
 	
